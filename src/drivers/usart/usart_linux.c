@@ -36,6 +36,10 @@ static void * usart_rx_thread(void * arg) {
 	usart_context_t * ctx = arg;
 	const unsigned int CBUF_SIZE = 400;
 	uint8_t * cbuf = malloc(CBUF_SIZE);
+	if (cbuf == NULL) {
+		csp_print("%s: malloc() failed, returned NULL\n", __FUNCTION__);
+		exit(1);
+	}
 
 	// Receive loop
 	while (1) {
@@ -189,10 +193,18 @@ int csp_usart_open(const csp_usart_conf_t * conf, csp_usart_callback_t rx_callba
 			close(fd);
 			return CSP_ERR_NOMEM;
 		}
+		ret = pthread_attr_destroy(&attributes);
+		if (ret != 0) {
+			csp_print("csp_if_udp_init: pthread_attr_destroy failed: %s: %d\n", strerror(ret), ret);
+		}
+	} else {
+		free(ctx);
 	}
 
 	if (return_fd) {
 		*return_fd = fd;
+	} else if (!rx_callback) {
+		close(fd);
 	}
 
 	return CSP_ERR_NONE;
