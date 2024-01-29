@@ -110,7 +110,7 @@ int csp_rtable_set(uint16_t address, int netmask, csp_iface_t * ifc, uint16_t vi
 	}
 
 	/* Validates options */
-	if ((ifc == NULL) || (netmask > (int)csp_id_get_host_bits())) {
+	if ((ifc == NULL)) {
 		csp_dbg_errno = CSP_DBG_ERR_INVALID_RTABLE_ENTRY; 
 		return CSP_ERR_INVAL;
 	}
